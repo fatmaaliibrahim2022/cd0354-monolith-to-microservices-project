@@ -1,31 +1,67 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   labels:
+#     service: udagram-frontend
+#   name: udagram-frontend
+# spec:
+#   selector:
+#     matchLabels:
+#       service: udagram-frontend
+#   replicas: 2
+#   template:
+#     metadata:
+#       labels:
+#         service: udagram-frontend
+#         api: external        
+#     spec:
+#       containers:
+#       - image: 06122019/udagram-frontend:v6
+#         name: udagram-frontend
+#         imagePullPolicy: Always          
+#         ports:
+#         - containerPort: 80
+#         resources:
+#           requests:
+#             memory: "64Mi"
+#             cpu: "250m"
+#           limits:
+#             memory: "1024Mi"
+#             cpu: "500m"                
+#       restartPolicy: Always
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    service: udagram-frontend
   name: udagram-frontend
+  labels:
+    app: udagram-frontend
 spec:
   selector:
     matchLabels:
-      service: udagram-frontend
-  replicas: 1
+      app: udagram-frontend
+  replicas: 2
   template:
     metadata:
       labels:
-        service: udagram-frontend
-        api: external        
+        app: udagram-frontend
     spec:
       containers:
-      - image: 06122019/udagram-frontend:v6
-        name: udagram-frontend
-        imagePullPolicy: Always          
-        ports:
-        - containerPort: 80
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "250m"
-          limits:
-            memory: "1024Mi"
-            cpu: "500m"                
-      restartPolicy: Always
+        - name: udagram-frontend
+          image: 06122019/udagram-frontend:v6
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+          envFrom:
+            - secretRef:
+                name: env-secret
+            - secretRef:
+                name: aws-secret
+            - configMapRef:
+                name: env-config
+
